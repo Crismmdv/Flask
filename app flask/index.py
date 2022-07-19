@@ -4,6 +4,7 @@ from wtforms import FileField, SubmitField
 from werkzeug.utils import secure_filename
 import os
 from wtforms.validators import InputRequired
+import pandas as pd
 
 
 
@@ -34,7 +35,9 @@ def Datos():
     if form.validate_on_submit():
         file= form.file.data
         file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)),app.config['UPLOAD_FOLDER'],secure_filename(file.filename)))
-        return "El archivo fue cargado exitosamente"
+        #tit=pd.read_csv(file,',')
+        #titulos=tit
+        return render_template('carga.html',tabla=file)
 
     return render_template('Datos.html',form=form)
 @app.route('/Visor')
