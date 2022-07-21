@@ -57,10 +57,16 @@ def Tablas():
     else: titulos='error'
     titulos= tit.columns.values
     if request.method =='POST':
-        tg= request.form['tipog']
         
+        tg= request.form['tipog']
+        if tg == "Schoeller":
+            elementos = ('Cu', 'Cr','F', 'Fe', 'Mn', 'Mg', 'Se', 'Zn','As','Cd','Hg','NO3','Pb','Cl','SO4','TDS')
+        elif tg== "Piper":
+            elementos= ('Cl','SO4','HCO3','CO3','Na','Ca','Mg')
+        elif tg== "Gibbs":
+            elementos= ('Cl','HCO3','Na','Ca','TDS')
         next = tg!=''
-        print (next)
+        #print (next)
         if next:
             return render_template('carga.html',tabla=titulos,elem=elementos,cabecera='Parámetros '+tg)
         return render_template('carga.html',tabla=titulos,elem=elementos,cabecera="Error")

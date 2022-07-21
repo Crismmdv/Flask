@@ -12,6 +12,7 @@
                     <tr>
                        <th> mg/L</th>
                        <th>Aniones y Cationes </th> 
+                       <th>Validación</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -20,18 +21,31 @@
                     <tr>
                         <td>{{gp}}</td>
                         <td>
-                            <select class="form-select" aria-label="Default select example" required>
+                            <select id=s{{gp}} onchange="validar()" class="form-select" aria-label="Default select example" required>
                                 <option selected>Seleccione columna</option>
                                 {% for e in tabla %}
-                                <option value="1">{{e}}</option>
+                                <option value={{e}}>{{e}}</option>
                                 {% endfor %}
                               </select>
                         </td>
+                        <td>
+                            <p id=aCl></p>
+                            
+                        </td>
+                        
                     </tr>
                     {% endfor %}
+
                 </tbody>
             </table>
-
+            
+            <py-script>
+                def validar():
+                    s = document.getElementById("Cl").value
+                    pyscript.write("aCL",s)
+                
+            </py-script>
+            
         </div>
 
     </div>
