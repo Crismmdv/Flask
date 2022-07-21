@@ -1,22 +1,32 @@
 {% extends './layout.html' %}
 {% block title %} titulos {% endblock %}
 {% block body %}
+<h2>Correlacione su tabla con los <br> {{cabecera}}</h2>
 <div class="row">
     <div class="col-md-6 offset-md-3">
-        <h1>Seleccion tipo de grafico</h1>
+        
+        
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped" id="select1">
                 <thead>
                     <tr>
-                       <th>#</th>
-                       <th>Nombre</th> 
+                       <th> mg/L</th>
+                       <th>Aniones y Cationes </th> 
                     </tr>
                 </thead>
                 <tbody>
-                    {% for gp in titulos %}
+                    {% for gp in elem %}
+                    
                     <tr>
-                        <td>{{loop.index}}</td>
                         <td>{{gp}}</td>
+                        <td>
+                            <select class="form-select" aria-label="Default select example" required>
+                                <option selected>Seleccione columna</option>
+                                {% for e in tabla %}
+                                <option value="1">{{e}}</option>
+                                {% endfor %}
+                              </select>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -26,5 +36,7 @@
 
     </div>
 </div>
-
+<div>
+    
+</div>
 {% endblock %}
