@@ -131,3 +131,7 @@ def creardf_sc(Y_df,filtro='',filtro2='',sz=8):
     a=filtro
     b=filtro2
     return format_df#,a,b
+
+def columnas(Y_df):
+    
+    return Y_df.columns.values#,a,b

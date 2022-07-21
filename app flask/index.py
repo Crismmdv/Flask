@@ -43,7 +43,7 @@ def Datos():
         tit= creardf_sc(pd.read_csv(ruta3,','))
         
         titulos= tit.to_csv(ruta2)
-        session["ruta"]=ruta2
+        session["ruta"]=ruta3
         return redirect(url_for('Tablas'))
 
     return render_template('Datos.html',form=form)
@@ -52,9 +52,10 @@ def Tablas():
     elementos=('Cl','SO4','HCO3','CO3','Na','Ca','Mg')
     if "ruta" in session:
         ruta=session["ruta"] 
-        try: titulos = pd.read_csv(ruta)
+        try: tit = pd.read_csv(ruta)
         except: titulos=''
     else: titulos='error'
+    titulos= tit.columns.values
     if request.method =='POST':
         tg= request.form['tipog']
         
