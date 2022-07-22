@@ -38,37 +38,47 @@ def Datos():
     if form.validate_on_submit():
         file= form.file.data
         ruta3= os.path.join(os.path.abspath(os.path.dirname(__file__)),app.config['UPLOAD_FOLDER'],secure_filename(file.filename))
-        ruta2= os.path.join(os.path.abspath(os.path.dirname(__file__)),app.config['UPLOAD_FOLDER'],secure_filename('archivo.csv'))
+        #ruta2= os.path.join(os.path.abspath(os.path.dirname(__file__)),app.config['UPLOAD_FOLDER'],secure_filename('archivo.csv'))
         file.save(ruta3)
         tit= creardf_sc(pd.read_csv(ruta3,','))
         
-        titulos= tit.to_csv(ruta2)
+        #titulos= tit.to_csv(ruta2)
         session["ruta"]=ruta3
         return redirect(url_for('Tablas'))
 
     return render_template('Datos.html',form=form)
 @app.route('/Tablas', methods=['GET','POST'])
 def Tablas():
-    elementos=('Cl','SO4','HCO3','CO3','Na','Ca','Mg')
+    elementos=()
     if "ruta" in session:
         ruta=session["ruta"] 
-        try: tit = pd.read_csv(ruta)
+        try: 
+            tit = pd.read_csv(ruta)
+            dtipo= tit.dtypes
+            dindex=list(dtipo.index)
+            dvalues=list(dtipo.values.astype(str))
+            dtipo= dict( pd.Series(dvalues, index= dindex))
         except: titulos=''
     else: titulos='error'
     titulos= tit.columns.values
     if request.method =='POST':
         
+        lista_de_tabla=list()    
+        
         tg= request.form['tipog']
+        session["tipograf"]=tg
         if tg == "Schoeller":
             elementos = ('Cu', 'Cr','F', 'Fe', 'Mn', 'Mg', 'Se', 'Zn','As','Cd','Hg','NO3','Pb','Cl','SO4','TDS')
         elif tg== "Piper":
             elementos= ('Cl','SO4','HCO3','CO3','Na','Ca','Mg')
         elif tg== "Gibbs":
             elementos= ('Cl','HCO3','Na','Ca','TDS')
+        session["elementos"]=elementos
+        if len(lista_de_tabla)>1: return redirect(url_for('Prueba'))
         next = tg!=''
-        #print (next)
+        #print (dtipo)
         if next:
-            return render_template('carga.html',tabla=titulos,elem=elementos,cabecera='Parámetros '+tg)
+            return render_template('carga.html',tabla=titulos,elem=elementos,cabecera='Parámetros '+tg, dtip=dtipo)
         return render_template('carga.html',tabla=titulos,elem=elementos,cabecera="Error")
     return render_template('cargapiper.html',tabla=titulos,elem=elementos)   
 
@@ -78,6 +88,18 @@ def Visor():
     graficos=("Schoeller","Piper", "Stiff")
     return render_template('visor.html', tipografico=graficos)
 
+@app.route('/Prueba')
+def Prueba():
+    if request.method =='POST':
+        elementos=session["elementos"]
+
+        for e in elementos:
+                if request.form['Cl']!="":
+                    lista_de_tabla.append(request.form[e])
+        return render_template('clear.html')
+    return redirect(url_for('Visor'))
 if __name__=='__main__':
     app.run(debug=True)
+
+
 
