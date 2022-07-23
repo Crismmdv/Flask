@@ -7,9 +7,8 @@ from werkzeug.utils import secure_filename
 import os
 from wtforms.validators import InputRequired
 import pandas as pd
-from funciones import creardf_sc
-
-
+from funciones import creardf_sc, creardf_piper
+from piper import plotpiper
 
 app= Flask(__name__)
 app.config['SECRET_KEY']='botonsecreto'
@@ -54,10 +53,12 @@ def Tablas():
         ruta=session["ruta"] 
         try: 
             tit = pd.read_csv(ruta)
+            #session["CSV"]=tit
             dtipo= tit.dtypes
             dindex=list(dtipo.index)
             dvalues=list(dtipo.values.astype(str))
             dtipo= dict( pd.Series(dvalues, index= dindex))
+            session['dtipo']=dtipo
         except: titulos=''
     else: titulos='error'
     titulos= tit.columns.values
@@ -70,15 +71,16 @@ def Tablas():
         if tg == "Schoeller":
             elementos = ('Cu', 'Cr','F', 'Fe', 'Mn', 'Mg', 'Se', 'Zn','As','Cd','Hg','NO3','Pb','Cl','SO4','TDS')
         elif tg== "Piper":
-            elementos= ('Cl','SO4','HCO3','CO3','Na','Ca','Mg')
+            elementos= ('Cl','SO4','HCO3','CO3','Na','Ca','Mg','K')
         elif tg== "Gibbs":
             elementos= ('Cl','HCO3','Na','Ca','TDS')
         session["elementos"]=elementos
-        if len(lista_de_tabla)>1: return redirect(url_for('Prueba'))
+        
+        
         next = tg!=''
         #print (dtipo)
         if next:
-            return render_template('carga.html',tabla=titulos,elem=elementos,cabecera='Parámetros '+tg, dtip=dtipo)
+            return redirect(url_for('Validacion'))
         return render_template('carga.html',tabla=titulos,elem=elementos,cabecera="Error")
     return render_template('cargapiper.html',tabla=titulos,elem=elementos)   
 
@@ -90,14 +92,52 @@ def Visor():
 
 @app.route('/Prueba')
 def Prueba():
+    
+
     if request.method =='POST':
         elementos=session["elementos"]
 
-        for e in elementos:
-                if request.form['Cl']!="":
-                    lista_de_tabla.append(request.form[e])
+                            
         return render_template('clear.html')
     return redirect(url_for('Visor'))
+
+def new_func():
+    lista_de_tablas=list()
+
+@app.route('/Validacion', methods=['GET','POST'])
+def Validacion():
+    elementos=session["elementos"]
+    
+    titulos= list(session["dtipo"].keys())
+    dtipo= session["dtipo"]
+    tg=session["tipograf"]
+    session["tipograf"]=tg
+            
+    if request.method=='POST':
+        llaves=list()
+        for elm in elementos:
+            llaves.append((elm,request.form[elm]))
+            #print (request.form[elm])
+        next=True
+        session["llaves"]=dict(llaves)
+        return redirect(url_for('Grafico'))
+        
+    return render_template('carga.html',tabla=titulos,elem=elementos,cabecera='Parámetros '+tg, dtip=dtipo)
+
+@app.route('/Grafico', methods=['GET','POST'])
+def Grafico():
+    dicc=session["llaves"]
+    ruta=session["ruta"] 
+    tit = pd.read_csv(ruta)
+    Y_df=tit
+    format_df= creardf_piper(Y_df,'','',25, dicc)
+    filtro=''
+    filtro2=''
+    img=plotpiper(format_df, unit='mg/L', figname='Piper '+filtro+'_'+filtro2+'_Subcuenca', figformat='jpg',nc=1)
+    
+    return render_template('clear.html',df=img)
+
+
 if __name__=='__main__':
     app.run(debug=True)
 

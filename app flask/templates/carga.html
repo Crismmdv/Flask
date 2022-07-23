@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-
+<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
 <py-env>
     - pandas
     - numpy
@@ -42,7 +42,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <form onsubmit="return false" action="{{ url_for('Prueba') }}" method="post" id="Ftabval" enctype="multipart/form-data">
+                    <form  action="" method="post" id="Ftabval" enctype="multipart/form-data">
                         {% for gp in elem %}
                         
                         <tr>
@@ -79,7 +79,7 @@
     <button id="run" type="button" class="btn btn-primary" pys-onClick="count">Validar</button>
 </div>
 <div class="btn-text-right">
-    <input id= "sgte" type="submit" name="Prueba" value="Siguiente" disabled="disabled">
+    <input id= "sgte" type="submit" form="Ftabval" value="Siguiente" disabled="disabled">
     <!--<button id = "sgte" type="button" onclick= "window.location.href={{ url_for( 'Prueba') }};" disabled>Siguiente</button>-->
 </div>
 <py-script>

@@ -132,6 +132,58 @@ def creardf_sc(Y_df,filtro='',filtro2='',sz=8):
     b=filtro2
     return format_df#,a,b
 
-def columnas(Y_df):
+def creardf_piper(Y_df,filtro='',filtro2='',sz=25, di=dict()):
+    format_sf = pd.DataFrame()
+    #filtro='F.A.E'
+    #filtro2=''
+    diccion=di
+    for i in diccion.keys():
+        format_sf[i]=Y_df[diccion[i]].copy()
     
-    return Y_df.columns.values#,a,b
+    if filtro!='' and filtro2 == '':
+        format_df=format_sf.groupby([filtro])
+        return (format_df)
+    elif filtro !='' and filtro2 !='':
+        format_df=format_sf.groupby([filtro,filtro2])
+        return (format_df)
+    else:
+        Y_df['TDS']=Y_df['STD_mg_l'].copy()
+        y_seven = Y_df['SubCuenca'].copy() 
+        y_2 = Y_df['Contexto_H'].copy()
+        y_t = Y_df['Tipo_Pto'].copy()
+        y_tds = Y_df['TDS'].copy()
+        
+        format_df=format_sf.copy()
+
+        format_df['Label'] = (Y_df['Contexto_H']).map(str)+' / '+(Y_df['Tipo_Pto']).map(str)
+        format_df['Sample'] = Y_df['Cod_Muestr'].copy
+        format_df['Size'] = sz
+        format_df['Alpha'] = 1
+
+
+
+
+        format_df.loc[y_seven=='Río Grande Medio', 'Color'] = 'yellow'#; format_df.loc[y_2==filtro, 'Marker'] = dtipo[filtro2]; format_df.loc[y_t==filtro2, 'Alpha']= 0.6
+        format_df.loc[y_seven=='Río Guatulame', 'Color'] = 'blue'#; format_df.loc[y_2==filtro, 'Marker'] = dtipo[filtro2]; format_df.loc[y_t==filtro2, 'Alpha']= 0.6
+        format_df.loc[y_seven=='Río Limarí', 'Color'] = 'lime'#; format_df.loc[y_2==filtro ,'Marker' ] = dtipo[filtro2]; format_df.loc[y_t==filtro2, 'Alpha']= 0.6
+        format_df.loc[y_seven=='Río Hurtado', 'Color'] = 'cyan'#; format_df.loc[y_2==filtro ,'Marker' ] = dtipo[filtro2]; format_df.loc[y_t==filtro2, 'Alpha']= 0.6
+        format_df.loc[y_seven=='Río Grande Bajo', 'Color'] = 'magenta'#; format_df.loc[y_2==filtro ,'Marker' ] = dtipo[filtro2]; format_df.loc[y_t==filtro2, 'Alpha']= 0.6
+        format_df.loc[y_seven=='Río Grande Alto', 'Color'] = 'red'#; format_df.loc[y_2==filtro ,'Marker' ] = dtipo[filtro2]; format_df.loc[y_t==filtro2, 'Alpha']= 0.6
+        format_df.loc[y_seven=='F.A.E', 'Color'] = 'white'
+
+        
+        format_df.loc[y_t=='superficial','Marker'] = 's'
+        format_df.loc[y_t=='subterranea','Marker'] = 'o'
+        format_df.loc[y_t=='vertiente','Marker'] = 'v'
+        format_df.loc[y_t=='precipitacion','Marker'] = 'd'
+        format_df.loc[y_t=='criosfera','Marker'] = '*'
+
+
+        format_df=format_df.dropna(how='any')
+        format_df = format_df.sort_values(by='Label')
+        
+
+        format_df.reset_index(inplace=True, drop=True)
+
+
+        return format_df
