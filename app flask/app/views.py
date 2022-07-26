@@ -1,3 +1,5 @@
+from app import app
+
 from contextlib import redirect_stderr
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_wtf import FlaskForm
@@ -10,23 +12,12 @@ import pandas as pd
 from funciones import creardf_sc, creardf_piper
 from piper import plotpiper
 
-app= Flask(__name__)
-app.config['SECRET_KEY']='botonsecreto'
-app.config['UPLOAD_FOLDER']='static/files'
+from ions import ions_WEIGHT, ions_CHARGE
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 
-class UploadFileForm(FlaskForm):
-    file= FileField("File", validators=[InputRequired()])
-    submit= SubmitField("Upload File")
-
-"""
-@app.route('/')
-def principal():
-    return "Otra vez.."
-@app.route('/contacto')
-def contacto():
-    return ('Esta es la pagina de ctacto')
-"""
 @app.route('/')
 def principal():
     return render_template('index.html')
@@ -136,10 +127,3 @@ def Grafico():
     img=plotpiper(format_df, unit='mg/L', figname='Piper '+filtro+'_'+filtro2+'_Subcuenca', figformat='jpg',nc=1)
     
     return render_template('clear.html',df=img)
-
-
-if __name__=='__main__':
-    app.run(debug=True)
-
-
-
